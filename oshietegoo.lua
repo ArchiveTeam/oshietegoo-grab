@@ -168,17 +168,18 @@ allowed = function(url, parenturl)
   end
 
   if not string.match(url, "^https?://[^/]*oshiete%.goo%.ne%.jp/")
-    and not string.match(url, "^https?://[^/]*xgoo%.jp/") then
+    and not string.match(url, "^https?://[^/]*xgoo%.jp/")
+    and not string.match(url, "^https?://[^/]*okwave.jp/") then
     discover_item(discovered_outlinks, string.match(percent_encode_url(url), "^([^%s]+)"))
     return false
-  end
-
-  for _, pattern in pairs({
-    "([0-9]+)"
-  }) do
-    for s in string.gmatch(url, pattern) do
-      if ids[string.lower(s)] then
-        return true
+  else
+    for _, pattern in pairs({
+      "([0-9]+)"
+    }) do
+      for s in string.gmatch(url, pattern) do
+        if ids[string.lower(s)] then
+          return true
+        end
       end
     end
   end
@@ -347,9 +348,42 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
     end
   end
 
+  local function set_new_params(newurl, data)
+    for param, value in pairs(data) do
+      if value == nil then
+        value = ""
+      elseif type(value) == "string" then
+        value = "=" .. value
+      end
+      if string.match(newurl, "[%?&]" .. param .. "[=&]") then
+        newurl = string.gsub(newurl, "([%?&]" .. param .. ")=?[^%?&;]*", "%1" .. value)
+      else
+        if string.match(newurl, "%?") then
+          newurl = newurl .. "&"
+        else
+          newurl = newurl .. "?"
+        end
+        newurl = newurl .. param .. value
+      end
+    end
+    return newurl
+  end
+
   if allowed(url)
-    and status_code < 300 then
+    and status_code < 300
+    and item_type ~= "asset" then
     html = read_file(file)
+    if item_type == "qa" and tonumber(item_value) <= 8905308 then
+      check("https://okwave.jp/qa/q" .. item_value .. ".html")
+    end
+    if string.match(html, "<div class=\"adultMain\">")
+      or string.match(html, "<div class=\"adultMain_box\">") then
+      error("Should not reach this.")
+      if string.match(url, "[%?&]check_ok=1") then
+        error("NSFW page is still not visible.")
+      end
+      check(set_new_params(url, {["check_ok"]="1"}))
+    end
     for newurl in string.gmatch(string.gsub(html, "&[qQ][uU][oO][tT];", '"'), '([^"]+)') do
       checknewurl(newurl)
     end
@@ -387,7 +421,8 @@ wget.callbacks.write_to_warc = function(url, http_stat)
   end
   is_initial_url = false
   if http_stat["statcode"] ~= 200
-    and http_stat["statcode"] ~= 301 then
+    and http_stat["statcode"] ~= 301
+    and http_stat["statcode"] ~= 302 then
     retry_url = true
     return false
   end
