@@ -1,6 +1,6 @@
 # oshietegoo-grab
 
-More information about the archiving project can be found on the ArchiveTeam wiki: [教えて! goo](https://wiki.archiveteam.org/index.php?title=教えて! goo)
+More information about the archiving project can be found on the ArchiveTeam wiki: [教えて! goo](https://wiki.archiveteam.org/index.php?title=Oshiete!_goo)
 
 ## Setup instructions
 
