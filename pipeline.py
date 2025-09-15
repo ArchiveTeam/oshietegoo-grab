@@ -17,6 +17,7 @@ import sys
 import time
 import string
 import re
+import http.client
 
 if sys.version_info[0] < 3:
     from urllib import unquote
@@ -115,6 +116,17 @@ class CheckIP(SimpleTask):
                     'Are you behind a firewall/proxy? That is a big no-no!')
                 raise Exception(
                     'Are you behind a firewall/proxy? That is a big no-no!')
+
+        # Check if okwave.jp is accessible
+        conn = http.client.HTTPSConnection("okwave.jp")
+        conn.request("GET", "/", headers={"User-Agent": USER_AGENT})
+        res = conn.getresponse()
+        item.log_output('Status for okwave.jp: {0} {1}'.format(res.status, res.reason))
+        if res.status == 403:
+            item.log_output(
+                'https://okwave.jp cannot be accessed!')
+            raise Exception(
+                'https://okwave.jp cannot be accessed!')
 
         # Check only occasionally
         if self._counter <= 0:
