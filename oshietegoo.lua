@@ -149,6 +149,7 @@ allowed = function(url, parenturl)
   if string.match(url, "^https?://login%.mail%.goo%.ne%.jp/")
     or string.match(url, "^https?://service%.ocn%.ne%.jp/")
     or string.match(url, "%?order=d?[ea]sc$")
+    or string.match(url, "^https?://b%.hatena%.ne%.jp/entry/")
     or (
       item_type ~= "okqa"
       and string.match(url, "^https?://okwave%.jp/")
