@@ -17,7 +17,6 @@ import sys
 import time
 import string
 import re
-import http.client
 
 if sys.version_info[0] < 3:
     from urllib import unquote
@@ -78,7 +77,7 @@ if not WGET_AT:
 #
 # Update this each time you make a non-cosmetic change.
 # It will be added to the WARC files and reported to the tracker.
-VERSION = '20250914.02'
+VERSION = '20250915.01'
 USER_AGENT = 'Mozilla/5.0 (X11; Linux i686; rv:124.0) Gecko/20100101 Firefox/124.0'
 TRACKER_ID = 'oshietegoo'
 TRACKER_HOST = 'legacy-api.arpa.li'
@@ -116,17 +115,6 @@ class CheckIP(SimpleTask):
                     'Are you behind a firewall/proxy? That is a big no-no!')
                 raise Exception(
                     'Are you behind a firewall/proxy? That is a big no-no!')
-
-        # Check if okwave.jp is accessible
-        conn = http.client.HTTPSConnection("okwave.jp")
-        conn.request("GET", "/", headers={"User-Agent": USER_AGENT})
-        res = conn.getresponse()
-        item.log_output('Status for okwave.jp: {0} {1}'.format(res.status, res.reason))
-        if res.status == 403:
-            item.log_output(
-                'https://okwave.jp cannot be accessed!')
-            raise Exception(
-                'https://okwave.jp cannot be accessed!')
 
         # Check only occasionally
         if self._counter <= 0:
@@ -324,6 +312,7 @@ class WgetArgs(object):
             if item_type == 'qa':
                 wget_args.extend(['--warc-header', 'oshietegoo-qa: '+item_value])
                 wget_args.append('https://oshiete.goo.ne.jp/qa/{}.html'.format(item_value))
+            #elif item_type == 'okqa':
             elif item_type == 'articles':
                 wget_args.extend(['--warc-header', 'oshietegoo-articles: '+item_value])
                 wget_args.append('https://oshiete.goo.ne.jp/articles/qa/{}/'.format(item_value))

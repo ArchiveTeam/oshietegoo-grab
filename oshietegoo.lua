@@ -148,7 +148,11 @@ allowed = function(url, parenturl)
 
   if string.match(url, "^https?://login%.mail%.goo%.ne%.jp/")
     or string.match(url, "^https?://service%.ocn%.ne%.jp/")
-    or string.match(url, "%?order=d?[ea]sc$") then
+    or string.match(url, "%?order=d?[ea]sc$")
+    or (
+      item_type ~= "okqa"
+      and string.match(url, "^https?://okwave%.jp/")
+    ) then
     return false
   end
 
@@ -422,7 +426,9 @@ wget.callbacks.write_to_warc = function(url, http_stat)
   is_initial_url = false
   if http_stat["statcode"] ~= 200
     and http_stat["statcode"] ~= 301
-    and http_stat["statcode"] ~= 302 then
+    and http_stat["statcode"] ~= 302
+    and http_stat["statcode"] ~= 404
+    and http_stat["statcode"] ~= 410 then
     retry_url = true
     return false
   end
