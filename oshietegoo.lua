@@ -77,6 +77,7 @@ end
 
 local item_patterns = {
   ["^https?://oshiete%.goo%.ne%.jp/qa/([0-9]+)%.html$"]="qa",
+  ["^https?://okwave%.jp/qa/q([0-9]+)%.html$"]="okqa",
   ["^https?://oshiete%.goo%.ne%.jp/profile/([0-9]+)/$"]="profile",
   ["^https?://oshiete%.goo%.ne%.jp/articles/qa/([0-9]+)/$"]="articles",
   ["^https?://([^/]*xgoo%.jp/.+)$"]="asset"
@@ -150,6 +151,8 @@ allowed = function(url, parenturl)
     or string.match(url, "^https?://service%.ocn%.ne%.jp/")
     or string.match(url, "%?order=d?[ea]sc$")
     or string.match(url, "^https?://b%.hatena%.ne%.jp/entry/")
+    or string.match(url, "^https?://[^/]*okwave%.jp/login")
+    or string.match(url, "^https?://[^/]*okwave%.jp/register")
     or (
       item_type ~= "okqa"
       and string.match(url, "^https?://okwave%.jp/")

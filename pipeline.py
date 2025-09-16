@@ -77,7 +77,7 @@ if not WGET_AT:
 #
 # Update this each time you make a non-cosmetic change.
 # It will be added to the WARC files and reported to the tracker.
-VERSION = '20250915.02'
+VERSION = '20250916.01'
 USER_AGENT = 'Mozilla/5.0 (X11; Linux i686; rv:124.0) Gecko/20100101 Firefox/124.0'
 TRACKER_ID = 'oshietegoo'
 TRACKER_HOST = 'legacy-api.arpa.li'
@@ -312,7 +312,9 @@ class WgetArgs(object):
             if item_type == 'qa':
                 wget_args.extend(['--warc-header', 'oshietegoo-qa: '+item_value])
                 wget_args.append('https://oshiete.goo.ne.jp/qa/{}.html'.format(item_value))
-            #elif item_type == 'okqa':
+            elif item_type == 'okqa':
+                wget_args.extend(['--warc-header', 'okwave-qa: '+item_value])
+                wget_args.append('https://okwave.jp/qa/q{}.html'.format(item_value))
             elif item_type == 'articles':
                 wget_args.extend(['--warc-header', 'oshietegoo-articles: '+item_value])
                 wget_args.append('https://oshiete.goo.ne.jp/articles/qa/{}/'.format(item_value))
